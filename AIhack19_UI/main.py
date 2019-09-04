@@ -1,15 +1,16 @@
 import os
-import wave
-#import magic
-import matplotlib.image as mpimg 
-import matplotlib.pyplot as plt 
-import urllib.request
 from app import app
-from flask import Flask, flash, request, redirect, render_template
+from flask import flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
 from data_upload import dataprepocess
+import CRNN
+import torch
+import numpy as np
 
 ALLOWED_EXTENSIONS = set(['wav','mp3'])
+model = CRNN.CRNN()
+model.load_state_dict(torch.load("C:/Users/Gowtham Senthil/Desktop/LID/AIhack19_UI/TrialRunWeights.pth"))
+    
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -32,22 +33,26 @@ def upload_file():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			print(filename)
 			flash('file loaded successfully')
 			nn = 'uploads/'+filename
-			
-			print(nn)
-
-			
-
-			
-			dataprepocess(nn)
-
-		   #aud = pre_process(w)
-		   #model.load('.../model/ai_predict.pkl')  or use the weights.
-		   #val = model.predict(aud)
-		   #if conditions
-			# The AI stuff goes here.  
+            
+			# Audio -> Image -> Probability
+			imgs = dataprepocess(nn)
+			noFrames = imgs.shape[0]
+			imgs = torch.from_numpy(imgs)
+			prob = model(imgs)
+			prob = prob.tolist()
+			if noFrames == 1:
+			    ans = prob
+			else:
+			    ans = np.array(prob[0])
+			    for i in range(1,noFrames):
+			        ans = np.multiply(ans,np.array(prob[i]))
+			    ans = list(ans)
+			probabilites = [float(i)/sum(ans) for i in ans]
+            # probabilites is the required ouput (List of 5 prob)
+			flash(probabilites)
+            
 			return redirect('/')
 		else:
 			flash('Only \'.wav\' and \'.mp3\' files are allowed.')
