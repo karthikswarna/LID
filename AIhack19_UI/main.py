@@ -48,19 +48,20 @@ def upload_file():
 			nn = 'uploads/'+filename
             
 			# Audio -> Image -> Probability
-			# imgs = dataprepocess(nn)
-			# noFrames = imgs.shape[0]
-			# imgs = torch.from_numpy(imgs)
-			# prob = model(imgs)
-			# prob = prob.tolist()
-			# if noFrames == 1:
-			#     ans = prob
-			# else:
-			#     ans = np.array(prob[0])
-			#     for i in range(1,noFrames):
-			#         ans = np.multiply(ans,np.array(prob[i]))
-			#     ans = list(ans)
+			imgs = dataprepocess(nn)
+			noFrames = imgs.shape[0]
+			imgs = torch.from_numpy(imgs)
+			prob = model(imgs)
+			prob = prob.tolist()
+			if noFrames == 1:
+			    ans = prob
+			else:
+			    ans = np.array(prob[0])
+			    for i in range(1,noFrames):
+			        ans = np.multiply(ans,np.array(prob[i]))
+			    ans = list(ans)
 			probabilites = [float(i)/sum(ans) for i in ans]
+			# probabilites = [i*i for i in range(5)]
             # probabilites is the required ouput (List of 5 prob)
 			flash(probabilites)
             
