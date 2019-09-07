@@ -47,7 +47,7 @@ def upload_file():
 			flash('file loaded successfully')
 			nn = 'uploads/'+filename
             
-			# Audio -> Image -> Probability
+			Audio -> Image -> Probability
 			imgs = dataprepocess(nn)
 			noFrames = imgs.shape[0]
 			imgs = torch.from_numpy(imgs)
@@ -61,7 +61,7 @@ def upload_file():
 			        ans = np.multiply(ans,np.array(prob[i]))
 			    ans = list(ans)
 			probabilites = [float(i)/sum(ans) for i in ans]
-			# probabilites = [i*i for i in range(5)]
+			#probabilites = [i*i for i in range(5)]
             # probabilites is the required ouput (List of 5 prob)
 			flash(probabilites)
             

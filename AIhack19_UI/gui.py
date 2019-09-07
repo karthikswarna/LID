@@ -272,19 +272,19 @@ def record():
         wf.close()
         
         imgs = dataprepocess(filename)
-		# noFrames = imgs.shape[0]
-		# imgs = torch.from_numpy(imgs)
-		# prob = model(imgs)
-		# prob = prob.tolist()
-		# if noFrames == 1:
-        #     ans = prob
-        # else:
-        #     ans = np.array(prob[0])
-        #     for i in range(1,noFrames):
-        #         ans = np.multiply(ans,np.array(prob[i]))
-        #     ans = list(ans)
-		# probabilites = [float(i)/sum(ans) for i in ans]
-        # print(probabilities)
+		noFrames = imgs.shape[0]
+		imgs = torch.from_numpy(imgs)
+		prob = model(imgs)
+		prob = prob.tolist()
+		if noFrames == 1:
+            ans = prob
+        else:
+            ans = np.array(prob[0])
+            for i in range(1,noFrames):
+                ans = np.multiply(ans,np.array(prob[i]))
+            ans = list(ans)
+		probabilites = [float(i)/sum(ans) for i in ans]
+        print(probabilities)
         print(imgs.shape)
     # Stop and close the stream 
     stream.stop_stream()
