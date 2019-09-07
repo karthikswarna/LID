@@ -1,15 +1,17 @@
 import os
+import tkinter as tk
+import time
 from app import app
 from flask import flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
 from data_upload import dataprepocess
-import CRNN
-import torch
+#import CRNN
+#import torch
 import numpy as np
-
+import gui
 ALLOWED_EXTENSIONS = set(['wav','mp3'])
-model = CRNN.CRNN()
-model.load_state_dict(torch.load("C:/Users/Gowtham Senthil/Desktop/LID/AIhack19_UI/TrialRunWeights.pth"))
+#model = CRNN.CRNN()
+#model.load_state_dict(torch.load("C:/Users/Gowtham Senthil/Desktop/LID/AIhack19_UI/TrialRunWeights.pth"))
     
 
 def allowed_file(filename):
@@ -18,6 +20,15 @@ def allowed_file(filename):
 @app.route('/')
 def upload_form():
 	return render_template('upload.html')
+
+@app.route('/server', methods=['POST'])
+def open_gui():
+	flash("Live recorder started")
+	# main = tk.Tk()
+	# app = gui.App(main)
+	gui.main()
+	flash("Live recorder closed")
+	return redirect('/')
 
 @app.route('/', methods=['POST'])
 def upload_file():
@@ -37,18 +48,18 @@ def upload_file():
 			nn = 'uploads/'+filename
             
 			# Audio -> Image -> Probability
-			imgs = dataprepocess(nn)
-			noFrames = imgs.shape[0]
-			imgs = torch.from_numpy(imgs)
-			prob = model(imgs)
-			prob = prob.tolist()
-			if noFrames == 1:
-			    ans = prob
-			else:
-			    ans = np.array(prob[0])
-			    for i in range(1,noFrames):
-			        ans = np.multiply(ans,np.array(prob[i]))
-			    ans = list(ans)
+			# imgs = dataprepocess(nn)
+			# noFrames = imgs.shape[0]
+			# imgs = torch.from_numpy(imgs)
+			# prob = model(imgs)
+			# prob = prob.tolist()
+			# if noFrames == 1:
+			#     ans = prob
+			# else:
+			#     ans = np.array(prob[0])
+			#     for i in range(1,noFrames):
+			#         ans = np.multiply(ans,np.array(prob[i]))
+			#     ans = list(ans)
 			probabilites = [float(i)/sum(ans) for i in ans]
             # probabilites is the required ouput (List of 5 prob)
 			flash(probabilites)
